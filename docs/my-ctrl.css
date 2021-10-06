@@ -1,0 +1,20 @@
+.my-ctrl {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.my-ctrl ul {
+  list-style: none;
+  margin: 5px;
+  padding: 0
+}
+
+.my-ctrl label {
+  cursor: pointer;
+}
+
+.my-ctrl label:hover {
+  text-decoration: underline;
+}

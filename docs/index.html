@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>voxel</title>
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="my-ctrl.css" />
+  <script src="https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.js"></script>
+  <script src="my-ctrl.js"></script>
+</head>
+
+<body>
+  <div id="map" style="width:1024px;height:768px;"></div>
+  <script>
+    const style = {
+      "version": 8,
+      "glyphs": "https://maps.gsi.go.jp/xyz/noto-jp/{fontstack}/{range}.pbf",
+      "sources": {
+        "relief": {
+          "type": "vector",
+          "tiles": [
+            "https://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png?voxel=2"
+          ],
+          "minzoom": 4,
+          "maxzoom": 20,
+          "attribution": "<a href='https://maps.gsi.go.jp/development/ichiran.html'>地理院タイル</a>"
+        },
+        "seamlessphoto": {
+          "type": "vector",
+          "tiles": [
+            "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg?voxel=2"
+          ],
+          "minzoom": 4,
+          "maxzoom": 20,
+          "attribution": "<a href='https://maps.gsi.go.jp/development/ichiran.html'>地理院タイル</a>"
+        },
+        "std": {
+          "type": "vector",
+          "tiles": [
+            "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png?voxel=2"
+          ],
+          "minzoom": 4,
+          "maxzoom": 20,
+          "attribution": "<a href='https://maps.gsi.go.jp/development/ichiran.html'>地理院タイル</a>"
+        }
+      },
+      "layers": [{
+          "id": "background",
+          "type": "background",
+          "paint": {
+            "background-color": "#100040"
+          }
+        },
+        {
+          "id": "relief",
+          "type": "fill-extrusion",
+          "source": "relief",
+          "source-layer": "voxel",
+          "minzoom": 4,
+          "maxzoom": 18,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "fill-extrusion-color": ["get", "color"],
+            "fill-extrusion-opacity": 1.0,
+            "fill-extrusion-height": ["interpolate", ["exponential", 2],
+              ["zoom"],
+              4, ["*", ["get", "height"], 128],
+              5, ["*", ["get", "height"], 64],
+              6, ["*", ["get", "height"], 32],
+              7, ["*", ["get", "height"], 16],
+              8, ["*", ["get", "height"], 8]
+            ]
+          }
+        }, {
+          "id": "seamlessphoto",
+          "type": "fill-extrusion",
+          "source": "seamlessphoto",
+          "source-layer": "voxel",
+          "minzoom": 4,
+          "maxzoom": 18,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": ["get", "color"],
+            "fill-extrusion-opacity": 1.0,
+            "fill-extrusion-height": ["interpolate", ["exponential", 2],
+              ["zoom"],
+              4, ["*", ["get", "height"], 128],
+              5, ["*", ["get", "height"], 64],
+              6, ["*", ["get", "height"], 32],
+              7, ["*", ["get", "height"], 16],
+              8, ["*", ["get", "height"], 8]
+            ]
+          }
+        }, {
+          "id": "std",
+          "type": "fill-extrusion",
+          "source": "std",
+          "source-layer": "voxel",
+          "minzoom": 4,
+          "maxzoom": 18,
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": ["get", "color"],
+            "fill-extrusion-opacity": 1.0,
+            "fill-extrusion-height": ["interpolate", ["exponential", 2],
+              ["zoom"],
+              4, ["*", ["get", "height"], 128],
+              5, ["*", ["get", "height"], 64],
+              6, ["*", ["get", "height"], 32],
+              7, ["*", ["get", "height"], 16],
+              8, ["*", ["get", "height"], 8]
+            ]
+          }
+        }
+
+      ]
+    };
+
+
+    (async function() {
+      await navigator.serviceWorker.register('./sw.js', {
+        scope: './'
+      });
+      if (!navigator.serviceWorker.controller) {
+        location.reload();
+        return;
+      }
+
+      const map = new maplibregl.Map({
+        container: "map",
+        center: [139.594, 36.337],
+        zoom: 7.5,
+        pitch: 60,
+        bearing: -30,
+        minZoom: 4,
+        hash: true,
+        style: style
+      });
+
+      map.addControl(new MyCtrl());
+    })();
+  </script>
+</body>
+
+</html>
